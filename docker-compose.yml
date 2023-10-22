@@ -1,0 +1,33 @@
+version: '3.2'
+
+services:
+   database:
+      environment:
+         - "ACCEPT_EULA=Y"
+         - "MSSQL_SA_PASSWORD=myStrongPassword12#"
+      ports:
+         - '1433:1433'
+      volumes:
+         - sqldata:/var/opt/mssql
+      container_name: sqlserver
+      image : mcr.microsoft.com/mssql/server
+      deploy:
+         resources:
+            reservations:
+               cpus: '2'
+               memory: 2GB
+   web-app:
+      container_name: softuni-bazar-web-app
+      image: c9vladibazarscr.azurecr.io/softunibazar2
+      ports:
+         - '80:80' 
+      domainname: c9vladi
+      build:
+         dockerfile: ./Dockerfile  
+      restart: on-failure           
+volumes:
+   sqldata:
+     driver: azure_file
+     driver_opts:
+        share_name: sql-volume
+        storage_account_name: c9vladibazarsa
